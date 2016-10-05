@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import numpy as np
-def resize(p):
+def resize(p,n):
     while(p<n):
         p = p*2
     return p
@@ -13,15 +13,15 @@ def read(n,arr):
     return arr
 
 def strassen(a,b,p,c):
-    a11 = a[:p//2, :p//2]
-    a12 = a[:p//2, p//2:p]
-    a21 = a[p//2:p, :p//2]
-    a22 = a[p//2:p, p//2:p]
-    b11 = b[:p//2, :p//2]
-    b12 = b[:p//2, p//2:p]
-    b21 = b[p//2:p, :p//2]
-    b22 = b[p//2:p, p//2:p]
     if p > 4:
+        a11 = a[:p//2, :p//2]
+        a12 = a[:p//2, p//2:p]
+        a21 = a[p//2:p, :p//2]
+        a22 = a[p//2:p, p//2:p]
+        b11 = b[:p//2, :p//2]
+        b12 = b[:p//2, p//2:p]
+        b21 = b[p//2:p, :p//2]
+        b22 = b[p//2:p, p//2:p]
         p1 = np.empty((p//2,p//2), dtype = a.dtype)
         p2 = np.empty((p//2,p//2), dtype = a.dtype)
         p3 = np.empty((p//2,p//2), dtype = a.dtype)
@@ -47,19 +47,17 @@ def strassen(a,b,p,c):
 
 def ansout(c,n):
     for i in range(0,n):
-        for j in range(0,n):
-            print(int(c[i][j]), end = " "),
-        print( )
+        print(" ".join(map(str, c[i][:n])))
 
 n = input()
 n = int(n)
 p = 1
-u = resize(p)
+u = resize(p,n)
+print(p)
 a = np.empty((u,u))
 b = np.empty((u,u))
 read(n,a)
 read(n,b)
 c = np.empty((u,u), dtype = a.dtype)
 с = strassen(a,b,u,c)
-c.dtype = a.dtype
 ansout(c,n)
