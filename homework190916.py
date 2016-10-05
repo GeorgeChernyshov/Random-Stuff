@@ -53,7 +53,6 @@ n = input()
 n = int(n)
 p = 1
 u = resize(p,n)
-print(p)
 a = np.empty((u,u))
 b = np.empty((u,u))
 read(n,a)
