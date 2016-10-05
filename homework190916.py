@@ -17,7 +17,6 @@ bk = b[:n, :n]
 for i in range(0,n):
     str = input()
     bk[i] = str.split()
-r = np.dot(a,b)
 a11 = a[:p//2, :p//2]
 a12 = a[:p//2, p//2:p]
 a21 = a[p//2:p, :p//2]
