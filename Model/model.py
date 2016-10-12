@@ -111,28 +111,28 @@ class BinaryOperation:
         self.lhs = lhs
         self.op = op
         self.rhs = rhs
- 
-    d = {
-        '+' : lambda lhs, rhs: lhs.value + rhs.value,
-        '-' : lambda lhs, rhs: lhs.value - rhs.value,
-        '*' : lambda lhs, rhs: lhs.value * rhs.value,
-        '/' : lambda lhs, rhs: lhs.value // rhs.value,
-        '%' : lambda lhs, rhs: lhs.value % rhs.value,
-        '==' : lambda lhs, rhs: 1 if (lhs.value == rhs.value) else 0,
-        '!=' : lambda lhs, rhs: 1 if (lhs.value != rhs.value) else 0,
-        '>' : lambda lhs, rhs: 1 if (lhs.value > rhs.value) else 0,
-        '<' : lambda lhs, rhs: 1 if (lhs.value < rhs.value) else 0,
-        '>=' : lambda lhs, rhs: 1 if (lhs.value >= rhs.value) else 0,
-        '<=' : lambda lhs, rhs: 1 if (lhs.value <= rhs.value) else 0,
-        '&&' : lambda lhs, rhs: lhs.value and rhs.value,
-        '||' : lambda lhs, rhs: lhs.value or rhs.value
 
+    d = {
+        '+': lambda lhs, rhs: lhs.value + rhs.value,
+        '-': lambda lhs, rhs: lhs.value - rhs.value,
+        '*': lambda lhs, rhs: lhs.value * rhs.value,
+        '/': lambda lhs, rhs: lhs.value // rhs.value,
+        '%': lambda lhs, rhs: lhs.value % rhs.value,
+        '==': lambda lhs, rhs: 1 if (lhs.value == rhs.value) else 0,
+        '!=': lambda lhs, rhs: 1 if (lhs.value != rhs.value) else 0,
+        '>': lambda lhs, rhs: 1 if (lhs.value > rhs.value) else 0,
+        '<': lambda lhs, rhs: 1 if (lhs.value < rhs.value) else 0,
+        '>=': lambda lhs, rhs: 1 if (lhs.value >= rhs.value) else 0,
+        '<=': lambda lhs, rhs: 1 if (lhs.value <= rhs.value) else 0,
+        '&&': lambda lhs, rhs: lhs.value and rhs.value,
+        '||': lambda lhs, rhs: lhs.value or rhs.value
     }
-       
+
     def evaluate(self, scope):
         l = self.lhs.evaluate(scope)
         r = self.rhs.evaluate(scope)
-        return Number(self.d[self.op](l,r))
+        return Number(self.d[self.op](l, r))
+
 
 class UnaryOperation:
     def __init__(self, op, expr):
@@ -166,7 +166,7 @@ def example():
 def my_tests():
     parent = Scope()
     parent["bar"] = Number(10)
-    cond = Conditional(BinaryOperation(parent["bar"], 
+    cond = Conditional(BinaryOperation(parent["bar"],
                        ">", Number(0)), None, [Print(Number(1))])
     cond.evaluate(parent)
     r = Read(parent["bar"])
