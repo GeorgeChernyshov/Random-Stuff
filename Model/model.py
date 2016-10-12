@@ -53,14 +53,15 @@ class Conditional:
         self.if_false = if_false
 
     def evaluate(self, scope):
+        last = None
         if(self.condition.evaluate(scope).value == 0):
-            for i in self.if_false:
-                last = i.evaluate(scope)
-            return last
+            a = self.if_false
         else:
-            for i in self.if_true:
+            a = self.if_true
+        if(a is not None):
+            for i in a:
                 last = i.evaluate(scope)
-            return last
+        return last
 
 
 class Print:
@@ -68,8 +69,9 @@ class Print:
         self.expr = expr
 
     def evaluate(self, scope):
-        print(self.expr.evaluate(scope).value)
-        return self.expr.evaluate(scope)
+        a = self.expr.evaluate(scope)
+        print(a.value)
+        return a
 
 
 class Read:
@@ -79,7 +81,7 @@ class Read:
     def evaluate(self, scope):
         a = Number(int(input()))
         scope[self.name] = a
-        return scope[value]
+        return a
 
 
 class FunctionCall:
@@ -90,11 +92,9 @@ class FunctionCall:
     def evaluate(self, scope):
         function = self.fun_expr.evaluate(scope)
         c = []
-        for i in self.args:
-            c.append(i.evaluate(scope))
         scope2 = Scope(scope)
-        for i, a in enumerate(c):
-            scope2[function.args[i]] = a
+        for i, a in zip(self.args, function.args):
+            scope2[a] = i.evaluate(scope)
         return function.evaluate(scope2)
 
 
@@ -111,37 +111,28 @@ class BinaryOperation:
         self.lhs = lhs
         self.op = op
         self.rhs = rhs
+ 
+    d = {
+        '+' : lambda lhs, rhs: lhs.value + rhs.value,
+        '-' : lambda lhs, rhs: lhs.value - rhs.value,
+        '*' : lambda lhs, rhs: lhs.value * rhs.value,
+        '/' : lambda lhs, rhs: lhs.value // rhs.value,
+        '%' : lambda lhs, rhs: lhs.value % rhs.value,
+        '==' : lambda lhs, rhs: 1 if (lhs.value == rhs.value) else 0,
+        '!=' : lambda lhs, rhs: 1 if (lhs.value != rhs.value) else 0,
+        '>' : lambda lhs, rhs: 1 if (lhs.value > rhs.value) else 0,
+        '<' : lambda lhs, rhs: 1 if (lhs.value < rhs.value) else 0,
+        '>=' : lambda lhs, rhs: 1 if (lhs.value >= rhs.value) else 0,
+        '<=' : lambda lhs, rhs: 1 if (lhs.value <= rhs.value) else 0,
+        '&&' : lambda lhs, rhs: lhs.value and rhs.value,
+        '||' : lambda lhs, rhs: lhs.value or rhs.value
 
+    }
+       
     def evaluate(self, scope):
-        l = self.lhs.evaluate(scope).value
-        r = self.rhs.evaluate(scope).value
-        if(self.op == '+'):
-            return Number(l + r)
-        if(self.op == '-'):
-            return Number(l - r)
-        if(self.op == '*'):
-            return Number(l * r)
-        if(self.op == '/'):
-            return Number(l // r)
-        if(self.op == '%'):
-            return Number(l % r)
-        if(self.op == '=='):
-            return Number(int(l == r))
-        if(self.op == '!='):
-            return Number(int(l != r))
-        if(self.op == '>'):
-            return Number(int(l > r))
-        if(self.op == '<'):
-            return Number(int(l < r))
-        if(self.op == '>='):
-            return Number(int(l >= r))
-        if(self.op == '<='):
-            return Number(int(l <= r))
-        if(self.op == '&&'):
-            return Number(int(l and r))
-        if(self.op == '||'):
-            return Number(int(l or r))
-
+        l = self.lhs.evaluate(scope)
+        r = self.rhs.evaluate(scope)
+        return Number(self.d[self.op](l,r))
 
 class UnaryOperation:
     def __init__(self, op, expr):
@@ -173,7 +164,14 @@ def example():
 
 
 def my_tests():
-    pass
+    parent = Scope()
+    parent["bar"] = Number(10)
+    cond = Conditional(BinaryOperation(parent["bar"], 
+                       ">", Number(0)), None, [Print(Number(1))])
+    cond.evaluate(parent)
+    r = Read(parent["bar"])
+    a = r.evaluate(parent).value
+    print(a)
 
 if __name__ == '__main__':
     example()
