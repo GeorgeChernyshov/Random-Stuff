@@ -53,13 +53,16 @@ class Conditional:
         self.if_false = if_false
 
     def evaluate(self, scope):
+        last = None
         if(self.condition.evaluate(scope).value == 0):
-            for i in self.if_false:
-                last = i.evaluate(scope)
+            if(self.if_false != None):
+                for i in self.if_false:
+                    last = i.evaluate(scope)
             return last
         else:
-            for i in self.if_true:
-                last = i.evaluate(scope)
+            if(self.if_true != None):
+                for i in self.if_true:
+                    last = i.evaluate(scope)
             return last
 
 
@@ -173,8 +176,10 @@ def example():
 
 
 def my_tests():
-    pass
+    parent = Scope()
+    parent["bar"] = Number(10)
+    cond = Conditional(BinaryOperation(parent["bar"], ">", Number(0)), None, [Print(Number(1))])
+    cond.evaluate(parent)
 
 if __name__ == '__main__':
     example()
-my_tests()
