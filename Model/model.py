@@ -55,12 +55,12 @@ class Conditional:
     def evaluate(self, scope):
         last = None
         if(self.condition.evaluate(scope).value == 0):
-            if(self.if_false != None):
+            if(self.if_false is not None):
                 for i in self.if_false:
                     last = i.evaluate(scope)
             return last
         else:
-            if(self.if_true != None):
+            if(self.if_true is not None):
                 for i in self.if_true:
                     last = i.evaluate(scope)
             return last
@@ -82,7 +82,7 @@ class Read:
     def evaluate(self, scope):
         a = Number(int(input()))
         scope[self.name] = a
-        return scope[value]
+        return a
 
 
 class FunctionCall:
@@ -178,8 +178,12 @@ def example():
 def my_tests():
     parent = Scope()
     parent["bar"] = Number(10)
-    cond = Conditional(BinaryOperation(parent["bar"], ">", Number(0)), None, [Print(Number(1))])
+    cond = Conditional(BinaryOperation(parent["bar"], 
+                       ">", Number(0)), None, [Print(Number(1))])
     cond.evaluate(parent)
+    r = Read(parent["bar"])
+    a = r.evaluate(parent).value
+    print(a)
 
 if __name__ == '__main__':
     example()
