@@ -71,8 +71,10 @@ class Print:
         self.expr = expr
 
     def evaluate(self, scope):
-        print(self.expr.evaluate(scope).value)
+        Number a = self.expr.evaluate(scope)
+        print(a.value)
         return self.expr.evaluate(scope)
+
 
 
 class Read:
