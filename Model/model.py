@@ -174,4 +174,7 @@ def my_tests():
 
 if __name__ == '__main__':
     example()
+<<<<<<< HEAD
     my_tests()
+=======
+>>>>>>> 79ddeec28283f461228f7fce120b406f85c47638
