@@ -27,7 +27,7 @@ foldl' f z (x:xs) = foldl' f (f z x) xs
 
 concat' :: [a] -> [a] -> [a]
 concat' x [] = x
-concat' [] (y:ys) = (y:concat' [] ys)
+concat' [] (y:ys) = (y:ys)
 concat' (x:xs) y = (x:concat' xs y)
 
 quickSort' :: Ord a => [a] -> [a]
