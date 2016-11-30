@@ -18,7 +18,7 @@ insert k1 v1 (Node k v lt rt) | k1 == k = (Node k v1 lt rt)
 merge :: Ord k => BinaryTree k v -> BinaryTree k v -> BinaryTree k v
 merge x Nil = x
 merge Nil x = x
-merge (Node k v lt rt) (Node k1 v1 lt1 rt1) = (Node k v lt (merge (Node k1 v1 lt1 rt1) rt))
+merge (Node k v lt rt) bin = (Node k v lt (merge rt bin))
 
 delete :: Ord k => k -> BinaryTree k v -> BinaryTree k v
 delete k1 Nil = Nil
