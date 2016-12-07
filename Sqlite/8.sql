@@ -1,7 +1,8 @@
-select Country.Name, City.Name
-from
-  Country
-  left join (City inner join Capital on City.Id = Capital.CityId)
+select Country.Name, Country.Population, Country.SurfaceArea
+from 
+  Country 
+  left join (City inner join Capital on City.CountryCode = Capital.CountryCode) 
   on Country.Code = City.CountryCode
-group by Country.Code
-having City.Population < max(City.Population);
+group by City.CountryCode
+having City.Population = max(City.Population) and City.Id != Capital.CityId
+order by 1.0*(Country.Population)/Country.SurfaceArea desc;
