@@ -143,12 +143,12 @@ class TestConditional(unittest.TestCase):
         parent = Scope()
         parent["bar"] = Number(10)
         parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
-                       ">", Number(0)), Number(0), Number(1))
+                       ">", Number(0)), [Number(0)], [Number(1)])
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
         self.mocked_out = self.patcher.start()
-        cond = Conditional(BinaryOperation(parent["bar"], 
-                       ">", Number(20)), Number(0), Number(1))
+        parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
+                       ">", Number(20)), [Number(0)], [Number(1)])
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.patcher.stop()
