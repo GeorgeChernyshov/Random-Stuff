@@ -149,6 +149,7 @@ class TestConditional(unittest.TestCase):
         self.mocked_out = self.patcher.start()
         cond = Conditional(BinaryOperation(parent["bar"], 
                        ">", Number(20)), Number(0), Number(1))
+        Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.patcher.stop()
 
