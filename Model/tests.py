@@ -57,30 +57,82 @@ class TestBinary(unittest.TestCase):
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.mocked_out = self.patcher.start()
+        self.patcher.stop()
+    
+    def test_logic(self):
+        self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+        self.mocked_out = self.patcher.start()
+        scope = Scope()
+        a = Number(3)
+        b = Number(4)
         scope["b"] = BinaryOperation(a, '==', b)
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
         self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(a, '==', a)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
+        self.mocked_out = self.patcher.start()
+        
         scope["b"] = BinaryOperation(a, '!=', b)
         Print(scope["b"]).evaluate(scope)
         assert(self.mocked_out.getvalue() != "0\n")
         self.mocked_out = self.patcher.start()
-        scope["b"] = BinaryOperation(a, '<', b)
+        scope["b"] = BinaryOperation(a, '!=', a)
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
         self.mocked_out = self.patcher.start()
-        scope["b"] = BinaryOperation(a, '>', b)
+        
+        scope["b"] = BinaryOperation(a, '<', b)
         Print(scope["b"]).evaluate(scope)
         assert(self.mocked_out.getvalue() != "0\n")
         self.mocked_out = self.patcher.start()
-        scope["b"] = BinaryOperation(a, '<=', b)
+        scope["b"] = BinaryOperation(a, '<', a)
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(b, '<', a)
+        Print(scope["b"]).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        
+        scope["b"] = BinaryOperation(a, '>', b)
+        Print(scope["b"]).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(a, '>', a)
+        Print(scope["b"]).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(b, '>', a)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
+        self.mocked_out = self.patcher.start()
+        
+        scope["b"] = BinaryOperation(a, '<=', b)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(a, '<=', a)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(b, '<=', a)
+        Print(scope["b"]).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        
+        scope["b"] = BinaryOperation(b, '>=', a)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = BinaryOperation(a, '>=', a)
+        Print(scope["b"]).evaluate(scope)
+        assert(self.mocked_out.getvalue() != "0\n")
         self.mocked_out = self.patcher.start()
         scope["b"] = BinaryOperation(a, '>=', b)
         Print(scope["b"]).evaluate(scope)
-        assert(self.mocked_out.getvalue() != "0\n")
-        self.mocked_out = self.patcher.start()
+        self.assertEqual(self.mocked_out.getvalue(), "0\n")
         self.patcher.stop()
      
      
@@ -103,6 +155,12 @@ class TestReference(unittest.TestCase):
         self.assertEqual(Reference('a').evaluate(parent), a)
 
 class TestFunction(unittest.TestCase):
+    def test_empty(self):
+        Function((), [])
+
+    def test_empty_body(self):
+        Function(('foo', 'bar'), [])
+    
     def test_function(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
         self.mocked_out = self.patcher.start()
@@ -122,6 +180,10 @@ class TestFunctionDefinition(unittest.TestCase):
         self.assertEqual(scope['a'], func)
 
 class TestFunctionCall(unittest.TestCase):
+    def test_empty(self):
+        FunctionCall(FunctionDefinition(
+        'foo', Function((), [])), ()).evaluate(Scope())
+        
     def test_function_call(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
         self.mocked_out = self.patcher.start()
@@ -137,6 +199,18 @@ class TestFunctionCall(unittest.TestCase):
         self.patcher.stop()
 
 class TestConditional(unittest.TestCase):
+    def test_true_empty_none(self):
+        Conditional(Number(1), [])
+        
+    def test_true_empty_empty(self):
+        Conditional(Number(1), [], [])
+
+    def test_false_empty_none(self):
+        Conditional(Number(0), [])
+
+    def test_false_empty_empty(self):
+        Conditional(Number(0), [], [])
+
     def test_conditional(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
         self.mocked_out = self.patcher.start()
@@ -154,6 +228,6 @@ class TestConditional(unittest.TestCase):
         self.patcher.stop()
 
 
+        
 if __name__ == "__main__":
     unittest.main()
-
