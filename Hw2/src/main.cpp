@@ -4,15 +4,15 @@
 #include <cstdio>
 
 int main(int argc, char **argv){
-    bool silent = true;
+    bool show = true;
     if(argc > 1){
         if(!strcmp(argv[1], "silent")){
-            silent = false;
+            show = false;
         }
     }
     
     Board b;
-    View v(b, silent);
+    View v(b, show);
     
     v.doGameCycle();
     return 0;

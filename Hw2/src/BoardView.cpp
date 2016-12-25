@@ -2,23 +2,23 @@
 #include <cstdio>
 #include <cstdlib>
 
-View::View(Board &b, bool show_){
+View::View(Board &b, bool show){
     board_ = b;
-    this->show_ = show_;
+    show_ = show;
 }
 
 void View::showBoard(){
     for(int i = 0; i < 10; i++){    
         for(int j = 0; j < 10; j++){       
-            if(board_[j][i] == -1){
+            if(board_.tiles_[j][i] == -1){
                 printf(".");
             }
             
-            if(board_[j][i] == 0){
+            if(board_.tiles_[j][i] == 0){
                 printf("O");
             }
             
-            if(board_[j][i] == 1){
+            if(board_.tiles_[j][i] == 1){
                 printf("X");
             }
         }
@@ -40,7 +40,7 @@ void View::doGameCycle(){
         }
         
         while(done == false){
-            if(playerId == 1){
+            if(playerID == 1){
                 printf("X move: ");
             }
             
@@ -48,7 +48,7 @@ void View::doGameCycle(){
                 printf("O move: ");
             }
             
-            scanf("%d %d", x, y);
+            scanf("%d %d", &x, &y);
             
             if(board_.canMove(x, y) == 0){
                 board_.move(x, y, playerID);
@@ -75,6 +75,6 @@ void View::doGameCycle(){
             printf("Draw!\n");
         }
         
-        PlayerID = 1 - PlayerID;
+        playerID = 1 - playerID;
     }
 }

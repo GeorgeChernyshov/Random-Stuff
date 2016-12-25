@@ -3,7 +3,7 @@
 
 class View {
     public:
-        View(Board &b, bool show_);
+        View(Board &b, bool show);
         void showBoard();
         void doGameCycle();
     private:
