@@ -227,7 +227,20 @@ class TestConditional(unittest.TestCase):
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.patcher.stop()
 
-
+class TestRead(unittest.TestCase):
+    def test_read(self):
+        self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+        self.mocked_out = self.patcher.start()
+        self.patcher2 = unittest.mock.patch("sys.stdin", io.StringIO('7'))
+        self.mocked_in = self.patcher2.start()
+        scope = Scope()
+        scope["s"] = Number(10)
+        r = Read('num').evaluate(scope)
+        Print(r).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "7\n")
+        self.patcher.stop()
+        self.patcher2.stop()
         
 if __name__ == "__main__":
     unittest.main()
+
