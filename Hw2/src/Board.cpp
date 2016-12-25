@@ -40,18 +40,11 @@ state Board::isWin(){
         row = 1;
         
         prev = tiles_[0][i];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10; j++){
             tile_visited = 0;
             if(prev == -1){
                 row = 1;
-                prev = tiles_[j][i];
-                if(prev == -1){
-                    row--;
-                }
                 tile_visited = 1;
             }
             
@@ -67,6 +60,7 @@ state Board::isWin(){
                     }
                 }
             }
+            prev = tiles_[j][i];
         }
     }
     
@@ -74,19 +68,11 @@ state Board::isWin(){
         row = 1;
         
         prev = tiles_[i][0];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10; j++){
             tile_visited = 0;
             if(prev == -1){
                 row = 1;
-                prev = tiles_[i][j];
-                if(prev == -1){
-                    row--;
-                }
-                
                 tile_visited = 1;
             }
             
@@ -102,6 +88,7 @@ state Board::isWin(){
                     }
                 }
             }
+            prev = tiles_[i][j];
         }
     }
     
@@ -109,19 +96,11 @@ state Board::isWin(){
         row = 1;
         
         prev = tiles_[0][i];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10-i; j++){
             tile_visited = 0;
             if(prev == -1){
                 row = 1;
-                prev = tiles_[j][i + j];
-                if(prev == -1){
-                    row--;
-                }
-                
                 tile_visited = 1;
             }
             
@@ -136,25 +115,18 @@ state Board::isWin(){
                         }
                     }
                 }
+                prev = tiles_[j][i + j];
             }
         }
         
         row = 1;
         
         prev = tiles_[i][0];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10-i; j++){
             tile_visited = 0;
             if(prev == -1){
                 row = 1;
-                prev = tiles_[i + j][j];
-                if(prev == -1){
-                    row--;
-                }
-                
                 tile_visited = 1;
             }
             
@@ -169,6 +141,7 @@ state Board::isWin(){
                         }
                     }
                 }
+                prev = tiles_[j][i + j];
             }
         }
     }
@@ -177,19 +150,11 @@ state Board::isWin(){
         row = 1;
         
         prev = tiles_[0][i];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10-i; j++){
             tile_visited = 0;
             if(prev == -1){
-                row = 1;
-                prev = tiles_[j][i - j];
-                if(prev == -1){
-                    row--;
-                }
-                
+                row = 1; 
                 tile_visited = 1;
             }
             
@@ -205,24 +170,17 @@ state Board::isWin(){
                     }
                 }
             }
+            prev = tiles_[j][i - j];
         }
         
         row = 1;
         
         prev = tiles_[i][0];
-        if(prev == -1){
-            row--;
-        }
         
         for(int j = 1; j < 10-i; j++){
             tile_visited = 0;
             if(prev == -1){
                 row = 1;
-                prev = tiles_[i - j][j];
-                if(prev == -1){
-                    row--;
-                }
-                
                 tile_visited = 1;
             }
             
@@ -238,6 +196,7 @@ state Board::isWin(){
                     }
                 }
             }
+            prev = tiles_[j][i - j];
         }
     }
     

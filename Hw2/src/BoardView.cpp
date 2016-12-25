@@ -2,9 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-View::View(Board &b, bool show){
-    board_ = b;
-    show_ = show;
+View::View(Board &b, bool show) : board_(b), show_(show){
 }
 
 void View::showBoard(){
@@ -31,7 +29,7 @@ void View::showBoard(){
 
 void View::doGameCycle(){
     int x, y;
-    char playerID = 1;
+    char playerID = 0;
     bool done;
     while(board_.isWin() == play){
         done = false;
@@ -48,30 +46,39 @@ void View::doGameCycle(){
                 printf("O move: ");
             }
             
-            scanf("%d %d", &x, &y);
+            scanf("%d %d", &y, &x);
             
             if(board_.canMove(x, y) == 0){
                 board_.move(x, y, playerID);
                 done = true;
             }else{
                 if(x == -1 && y == -1){
-                    printf("Good Bye");
+                    printf("Good Bye\n");
                     exit(1);
                 }
-                printf("Bad Move!");
+                printf("Bad Move!\n");
             }
         }
         
         state status = board_.isWin();
         if(status == x_wins){
+            if(show_){
+                showBoard();
+            }
             printf("X wins!\n");
         }
         
         if(status == o_wins){
+            if(show_){
+                showBoard();
+            }
             printf("O wins!\n");
         }
         
         if(status == draw){
+            if(show_){
+                showBoard();
+            }
             printf("Draw!\n");
         }
         
