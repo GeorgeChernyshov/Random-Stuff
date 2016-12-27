@@ -8,6 +8,7 @@ class TestNumber(unittest.TestCase):
         scope = Scope()
         num = Number(1)
         self.assertIsInstance(num, Number)
+        self.assertIsInstance(num.evaluate(scope), Number)
         self.assertIs(num, num.evaluate(scope))
 
 class TestPrint(unittest.TestCase):
@@ -58,6 +59,8 @@ class TestBinary(unittest.TestCase):
         b = Number(4)
         scope["b"] = BinaryOperation(a, '+', b)
         Print(scope["b"]).evaluate(scope)
+        self.assertIsInstance(scope["b"], BinaryOperation)
+        self.assertIsInstance(scope["b"].evaluate(scope), Number)
         self.assertEqual(self.mocked_out.getvalue(), "13\n")
         self.mocked_out = self.patcher.start()
         scope["b"] = BinaryOperation(a, '-', b)
@@ -182,22 +185,22 @@ class TestReference(unittest.TestCase):
         a = Number(1)
         b = Number(2)
         c = Number(3)
-        parent["a"] = a
-        scope["a"] = b
-        parent["c"] = c
-        self.assertIs(Reference('a').evaluate(parent), a)
-        self.assertIs(Reference('a').evaluate(scope), b)
-        self.assertIs(Reference('c').evaluate(parent), c)
-        self.assertIs(Reference('c').evaluate(scope), c)
+        parent["f1"] = a
+        scope["f1"] = b
+        parent["f2"] = c
+        self.assertIs(Reference('f1').evaluate(parent), a)
+        self.assertIs(Reference('f1').evaluate(scope), b)
+        self.assertIs(Reference('f2').evaluate(parent), c)
+        self.assertIs(Reference('f2').evaluate(scope), c)
 
     def test_reference_model(self):
         parent = Scope()
         scope = Scope(parent)
         a = Function([], [])
-        parent["a"] = a
-        self.assertIsInstance(Reference("a"), Reference)
-        self.assertIs(Reference('a').evaluate(parent), a)
-        self.assertIs(Reference('a').evaluate(scope), a)
+        parent["f"] = a
+        self.assertIsInstance(Reference("f"), Reference)
+        self.assertIs(Reference('f').evaluate(parent), a)
+        self.assertIs(Reference('f').evaluate(scope), a)
 
 class TestFunction(unittest.TestCase):
     def test_empty(self):
@@ -305,6 +308,18 @@ class TestConditional(unittest.TestCase):
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.patcher.stop()
 
+    def test_conditional_2(self):
+        self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+        self.mocked_out = self.patcher.start()
+        parent = Scope()
+        parent["bar"] = Number(10)
+        parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
+                       "<", Number(0)), [Number(0)], [Number(1), Number(2)])
+        self.assertIsInstance(parent["foo"], Conditional)
+        Print(parent["foo"]).evaluate(parent)
+        self.assertEqual(self.mocked_out.getvalue(), "2\n")
+        self.patcher.stop()
+
 class TestRead(unittest.TestCase):
     def test_read(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -314,6 +329,7 @@ class TestRead(unittest.TestCase):
             self.patcher2 = unittest.mock.patch("sys.stdin", io.StringIO(str(i)+"\n"))
             self.mocked_in = self.patcher2.start()
             Read("num"+str(i)).evaluate(scope)
+            self.assertIsInstance(scope["num"+str(i)], Number)
             Print(scope["num"+str(i)]).evaluate(scope)
             self.assertEqual(self.mocked_out.getvalue(), str(i) + "\n")
             self.mocked_out = self.patcher.start()
