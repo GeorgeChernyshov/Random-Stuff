@@ -3,6 +3,13 @@ import unittest.mock
 import io
 from model import *
 
+class TestNumber(unittest.TestCase):
+    def test_number(self):
+        scope = Scope()
+        num = Number(1)
+        self.assertIsInstance(num, Number)
+        self.assertIs(num, num.evaluate(scope))
+
 class TestPrint(unittest.TestCase):
     def test_print(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -21,12 +28,24 @@ class TestUnary(unittest.TestCase):
         self.mocked_out = self.patcher.start()
         scope = Scope()
         scope["b"] = UnaryOperation('-', Number(5))
+        self.assertIsInstance(scope["b"], UnaryOperation)
+        self.assertIsInstance(scope["b"].evaluate(scope), Number)
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "-5\n")
         self.mocked_out = self.patcher.start()
+        scope["b"] = UnaryOperation('-', Number(-5))
+        Print(scope["b"]).evaluate(scope)
+        self.assertEqual(self.mocked_out.getvalue(), "5\n")
+        self.mocked_out = self.patcher.start()
         scope["b"] = UnaryOperation('!', Number(5))
+        self.assertIsInstance(scope["b"], UnaryOperation)
+        self.assertIsInstance(scope["b"].evaluate(scope), Number)
         Print(scope["b"]).evaluate(scope)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
+        self.mocked_out = self.patcher.start()
+        scope["b"] = UnaryOperation('!', Number(0))
+        Print(scope["b"]).evaluate(scope)   
+        self.assertNotEqual(self.mocked_out.getvalue(), "0\n")
         self.patcher.stop()
      
      
@@ -137,29 +156,57 @@ class TestBinary(unittest.TestCase):
      
      
 class TestScope(unittest.TestCase):
-    def test_scope(self):
+    def test_scope_num(self):
         parent = Scope()
         parent["num"] = 5
-        self.assertEqual(parent["num"], 5)
+        self.assertIs(parent["num"], 5)
         scope = Scope(parent)
-        self.assertEqual(scope["num"], 5)
+        self.assertIs(scope["num"], 5)
         parent["num"] = 1
-        self.assertEqual(scope["num"], 1)
-     
+        self.assertIs(scope["num"], 1)
+        
+    def test_scope_model(self):
+        parent = Scope()
+        scope = Scope(parent)
+        a = Number(2)
+        parent["a"] = a
+        self.assertIs(scope["a"], a)
+        f = Function(None, None)
+        parent["f"] = f
+        self.assertIs(scope["f"], f)
      
 class TestReference(unittest.TestCase):
-    def test_reference(self):
+    def test_reference_number(self):
         parent = Scope()
+        scope = Scope(parent)
         a = Number(1)
+        b = Number(2)
+        c = Number(3)
         parent["a"] = a
-        self.assertEqual(Reference('a').evaluate(parent), a)
+        scope["a"] = b
+        parent["c"] = c
+        self.assertIs(Reference('a').evaluate(parent), a)
+        self.assertIs(Reference('a').evaluate(scope), b)
+        self.assertIs(Reference('c').evaluate(parent), c)
+        self.assertIs(Reference('c').evaluate(scope), c)
+
+    def test_reference_model(self):
+        parent = Scope()
+        scope = Scope(parent)
+        a = Function([], [])
+        parent["a"] = a
+        self.assertIsInstance(Reference("a"), Reference)
+        self.assertIs(Reference('a').evaluate(parent), a)
+        self.assertIs(Reference('a').evaluate(scope), a)
 
 class TestFunction(unittest.TestCase):
     def test_empty(self):
-        Function((), [])
-
+        a = Function((), [])
+        self.assertIsInstance(a, Function)
+        
     def test_empty_body(self):
-        Function(('foo', 'bar'), [])
+        a = Function(('foo', 'bar'), [])
+        self.assertIsInstance(a, Function)
     
     def test_function(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -167,7 +214,9 @@ class TestFunction(unittest.TestCase):
         parent = Scope()
         parent["bar"] = Number(10)
         parent["foo"] = Function(('hello', 'world'),
-                             [Number(3)])
+                             [Number(1), Number(3)])
+        self.assertIsInstance(parent["foo"], Function)
+        self.assertIsInstance(parent["foo"].evaluate(parent), Number)
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "3\n")
         self.patcher.stop()
@@ -175,41 +224,68 @@ class TestFunction(unittest.TestCase):
 class TestFunctionDefinition(unittest.TestCase):
     def test_function_definition(self):
         scope = Scope()
-        func = Function([], ())
-        FunctionDefinition('a', func).evaluate(scope)
-        self.assertEqual(scope['a'], func)
+        func1 = Function([], [])
+        func2 = Function(None, None)
+        func3 = Function(["arg"], [Number(1)])
+        def1 = FunctionDefinition('a', func1)
+        def2 = FunctionDefinition('b', func2)
+        def3 = FunctionDefinition('c', func3) 
+        self.assertIsInstance(def1, FunctionDefinition)
+        self.assertIsInstance(def2, FunctionDefinition)
+        self.assertIsInstance(def3, FunctionDefinition)
+        self.assertIsInstance(def1.evaluate(scope), Function)
+        self.assertIsInstance(def2.evaluate(scope), Function)
+        self.assertIsInstance(def3.evaluate(scope), Function)
+        self.assertIs(scope["a"], func1)
+        self.assertIs(scope["b"], func2)
+        self.assertIs(scope["c"], func3)
 
 class TestFunctionCall(unittest.TestCase):
     def test_empty(self):
-        FunctionCall(FunctionDefinition(
-        'foo', Function((), [])), ()).evaluate(Scope())
+        b = FunctionCall(FunctionDefinition(
+        'a', Function((), [])), ())
+        self.assertIsInstance(b, FunctionCall)
         
     def test_function_call(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
         self.mocked_out = self.patcher.start()
         parent = Scope()
-        parent["bar"] = Number(10)
-        parent["foo"] = Function(('hello', 'world'),
-                             [Print(BinaryOperation(Reference('hello'),
-                                                    '+',
-                                                    Reference('world')))])
-        FunctionCall(FunctionDefinition('foo', parent['foo']),
-                 [Number(5), Number(3)]).evaluate(parent)
-        self.assertEqual(self.mocked_out.getvalue(), "8\n")
+        f1 = Function([], [])
+        f2 = Function(('hello', 'world'), [Number(1), Reference("world")])
+        d1 = FunctionDefinition("b1", f1)
+        d2 = FunctionDefinition("b2", f2)
+        c1 = FunctionCall(d1, [])
+        c2 = FunctionCall(d2, [Number(1), Number(2)])
+        self.assertIsInstance(c1, FunctionCall)
+        self.assertIsInstance(c2, FunctionCall)
+        Print(c2.evaluate(parent)).evaluate(parent)
+        self.assertEqual(self.mocked_out.getvalue(), "2\n")
         self.patcher.stop()
 
 class TestConditional(unittest.TestCase):
     def test_true_empty_none(self):
-        Conditional(Number(1), [])
+        a = Conditional(Number(1), [])
+        b = Conditional(Number(1), None)
+        self.assertIsInstance(a, Conditional)
+        self.assertIsInstance(b, Conditional)
         
     def test_true_empty_empty(self):
-        Conditional(Number(1), [], [])
+        a = Conditional(Number(1), [], [])
+        b = Conditional(Number(1), None, None)
+        self.assertIsInstance(a, Conditional)
+        self.assertIsInstance(b, Conditional)
 
     def test_false_empty_none(self):
-        Conditional(Number(0), [])
+        a = Conditional(Number(0), [])
+        b = Conditional(Number(0), None)
+        self.assertIsInstance(a, Conditional)
+        self.assertIsInstance(b, Conditional)
 
     def test_false_empty_empty(self):
-        Conditional(Number(0), [], [])
+        a = Conditional(Number(0), [], [])
+        b = Conditional(Number(0), None, None)
+        self.assertIsInstance(a, Conditional)
+        self.assertIsInstance(b, Conditional)
 
     def test_conditional(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
@@ -218,11 +294,13 @@ class TestConditional(unittest.TestCase):
         parent["bar"] = Number(10)
         parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
                        ">", Number(0)), [Number(0)], [Number(1)])
+        self.assertIsInstance(parent["foo"], Conditional)
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "0\n")
         self.mocked_out = self.patcher.start()
         parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
                        ">", Number(20)), [Number(0)], [Number(1)])
+        self.assertIsInstance(parent["foo"], Conditional)
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "1\n")
         self.patcher.stop()
@@ -231,13 +309,14 @@ class TestRead(unittest.TestCase):
     def test_read(self):
         self.patcher = unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
         self.mocked_out = self.patcher.start()
-        self.patcher2 = unittest.mock.patch("sys.stdin", io.StringIO('7'))
-        self.mocked_in = self.patcher2.start()
         scope = Scope()
-        scope["s"] = Number(10)
-        r = Read('num').evaluate(scope)
-        Print(r).evaluate(scope)
-        self.assertEqual(self.mocked_out.getvalue(), "7\n")
+        for i in range(100):
+            self.patcher2 = unittest.mock.patch("sys.stdin", io.StringIO(str(i)+"\n"))
+            self.mocked_in = self.patcher2.start()
+            Read("num"+str(i)).evaluate(scope)
+            Print(scope["num"+str(i)]).evaluate(scope)
+            self.assertEqual(self.mocked_out.getvalue(), str(i) + "\n")
+            self.mocked_out = self.patcher.start()
         self.patcher.stop()
         self.patcher2.stop()
         
