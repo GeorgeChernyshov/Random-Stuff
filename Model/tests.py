@@ -314,7 +314,13 @@ class TestConditional(unittest.TestCase):
         parent = Scope()
         parent["bar"] = Number(10)
         parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
-                       "<", Number(0)), [Number(0)], [Number(1), Number(2)])
+                       ">", Number(0)), [Number(0), Number(2)], [Number(1)])
+        self.assertIsInstance(parent["foo"], Conditional)
+        Print(parent["foo"]).evaluate(parent)
+        self.assertEqual(self.mocked_out.getvalue(), "2\n")
+        self.mocked_out = self.patcher.start()
+        parent["foo"] = Conditional(BinaryOperation(parent["bar"], 
+                       ">", Number(20)), [Number(0)], [Number(1), Number(2)])
         self.assertIsInstance(parent["foo"], Conditional)
         Print(parent["foo"]).evaluate(parent)
         self.assertEqual(self.mocked_out.getvalue(), "2\n")
