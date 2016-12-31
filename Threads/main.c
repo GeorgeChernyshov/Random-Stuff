@@ -8,8 +8,10 @@ int x[100000];
 int y[100000];
 int N, d, threads_num;
 
-int main(){
-  scanf("%d %d %d", &threads_num, &N, &d);
+int main(int argc, char **argv){
+  threads_num = atoi(argv[1]);
+  N = atoi(argv[2]);
+  d = atoi(argv[3]);
   for (int i = 0; i < N; i++){
       x[i] = rand();
       y[i] = x[i];
