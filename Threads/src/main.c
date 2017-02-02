@@ -4,16 +4,13 @@
 #include <pthread.h>
 #include "pqsort.h"
 
-
-int x[100000];
-int y[100000];
-int N, d, threads_num;
-
 int main(int argc, char **argv){
     if(argc == 4){
-        threads_num = atoi(argv[1]);
-        N = atoi(argv[2]);
-        d = atoi(argv[3]);
+        int threads_num = atoi(argv[1]);
+        int N = atoi(argv[2]);
+        int d = atoi(argv[3]);
+        int x[N];
+        int y[N];
         for (int i = 0; i < N; i++){
             x[i] = rand();
             y[i] = x[i];
