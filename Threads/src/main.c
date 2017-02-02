@@ -9,8 +9,8 @@ int main(int argc, char **argv){
         int threads_num = atoi(argv[1]);
         int N = atoi(argv[2]);
         int d = atoi(argv[3]);
-        int x[N];
-        int y[N];
+        int *x = malloc(sizeof(int)*N);
+        int *y = malloc(sizeof(int)*N);
         for (int i = 0; i < N; i++){
             x[i] = rand();
             y[i] = x[i];
