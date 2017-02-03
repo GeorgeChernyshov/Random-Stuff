@@ -49,9 +49,9 @@ int q_partition(int left, int right, int* a){
 
 void submit_qsort_task(int depth, int max_depth, int left, int right, int* a, struct ThreadPool* pool){
     if(depth >= max_depth){
+        qsort(a+left, (right-left), sizeof (int), (int(*) (const void *, const void *)) comp);
         pthread_mutex_lock(&done_mutex);
         done-= (right-left);
-        qsort(a+left, (right-left), sizeof (int), (int(*) (const void *, const void *)) comp);
         if (done == 0) pthread_cond_signal(&cond_exit);
         pthread_mutex_unlock(&done_mutex);
     }else{

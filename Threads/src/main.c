@@ -21,6 +21,8 @@ int main(int argc, char **argv){
         for (int i = 0; i < N; i++){
             assert(x[i] == y[i]);
         }
+        free(x);
+        free(y);
     }else{
         printf("Wrong parameters");
     }
