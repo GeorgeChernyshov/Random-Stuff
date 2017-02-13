@@ -5,7 +5,7 @@
 
 void* thpool_go(void* arg){
     struct ThreadPool* pool = arg;
-    while(pool->is_working){
+    while(1){
         wsqueue_wait(pool->tasks);
         struct list_node* node = wsqueue_pop(pool->tasks);
         if(node){
@@ -16,16 +16,8 @@ void* thpool_go(void* arg){
             pthread_cond_signal(&task->cond);
             pthread_mutex_unlock(&task->mutex);
             destroy_task(task);
+            
         }
-    }
-    for (unsigned i = 0; i < pool->num; i++){
-        struct Task* task = create_task();
-        task->arg = NULL;
-        task->f = pthread_exit;
-        wsqueue_push(pool->tasks, (struct list_node*) task);
-    }
-    for (unsigned i = 0; i < pool->num; i++){
-        pthread_join(pool->threads[i], NULL);
     }
     return NULL;
 }
@@ -60,9 +52,6 @@ void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
 }
 
 void thpool_finit(struct ThreadPool* pool){
-    pthread_mutex_lock(&pool->pool_mutex);
-    pool->is_working = 0;
-    pthread_mutex_unlock(&pool->pool_mutex);
     pthread_mutex_destroy(&pool->pool_mutex);
     free(pool->threads);
     wsqueue_finit(pool->tasks);
@@ -71,7 +60,9 @@ void thpool_finit(struct ThreadPool* pool){
 
 void thpool_submit(struct ThreadPool* pool, struct Task* task){
     pthread_mutex_lock(&pool->pool_mutex);
-    if(pool->is_working) wsqueue_push(pool->tasks, (struct list_node*) task);
+    if(pool->is_working){ 
+        wsqueue_push(pool->tasks, (struct list_node*) task);
+    }
     pthread_mutex_unlock(&pool->pool_mutex);
 }
 
