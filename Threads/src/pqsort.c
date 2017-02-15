@@ -83,7 +83,23 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
+    args->task->complete = 1;
     destroy_task(args->task);
+}
+
+struct Task* create_task(void){
+    struct Task* task = malloc(sizeof(struct Task));
+    task->complete = 0;
+    pthread_mutex_init(&task->mutex, NULL);
+    pthread_cond_init(&task->cond, NULL);
+    return task;
+}
+
+void destroy_task(struct Task* task){
+    free(task->arg);
+    pthread_mutex_destroy(&task->mutex);
+    pthread_cond_destroy(&task->cond);
+    free(task);    
 }
 
 void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool, int threads_num){

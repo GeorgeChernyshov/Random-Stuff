@@ -3,6 +3,8 @@
 #include "thread_pool.h"
 #include <pthread.h>
 
+struct wsqueue ws;
+
 void* thpool_go(void* arg){
     struct ThreadPool* pool = arg;
     while(1){
@@ -16,25 +18,10 @@ void* thpool_go(void* arg){
     return NULL;
 }
 
-struct Task* create_task(void){
-    struct Task* task = malloc(sizeof(struct Task));
-    pthread_mutex_init(&task->mutex, NULL);
-    pthread_cond_init(&task->cond, NULL);
-    return task;
-}
-
-void destroy_task(struct Task* task){
-    free(task->arg);
-    pthread_mutex_destroy(&task->mutex);
-    pthread_cond_destroy(&task->cond);
-    free(task);    
-}
-
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
-    pthread_mutex_init(&pool->pool_mutex, NULL);
     pool->threads = malloc(threads_nm * sizeof(pthread_t));
-    pool->tasks = malloc(sizeof(struct wsqueue));
-    wsqueue_init(pool->tasks);
+    wsqueue_init(&ws);
+    pool->tasks = &ws;
     pool->num = threads_nm;
     for (unsigned i = 0; i < threads_nm; i++){
         pthread_create(&pool->threads[i], NULL, thpool_go, pool);
@@ -42,26 +29,23 @@ void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
 }
 
 void thpool_finit(struct ThreadPool* pool){
-    pthread_mutex_destroy(&pool->pool_mutex);
-    struct Task* task = create_task();
-    task->arg = NULL;
-    task->f = pthread_exit;
+    struct Task task;
+    task.arg = NULL;
+    task.f = pthread_exit;
+    task.complete = 0;
     for (unsigned i = 0; i < pool->num; i++){
-        wsqueue_push(pool->tasks, (struct list_node*) task);
+        wsqueue_push(pool->tasks, (struct list_node*) (&task));
     }
     for (unsigned i = 0; i < pool->num; i++){
         pthread_join(pool->threads[i], NULL);
     }
     free(pool->threads);
-    destroy_task(task);
+    free(task.arg);
     wsqueue_finit(pool->tasks);
-    free(pool->tasks);
 }
 
 void thpool_submit(struct ThreadPool* pool, struct Task* task){
-    pthread_mutex_lock(&pool->pool_mutex);
     wsqueue_push(pool->tasks, (struct list_node*) task);
-    pthread_mutex_unlock(&pool->pool_mutex);
 }
 
 void thpool_wait(struct Task* task){
