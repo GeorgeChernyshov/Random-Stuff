@@ -43,7 +43,17 @@ void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
 
 void thpool_finit(struct ThreadPool* pool){
     pthread_mutex_destroy(&pool->pool_mutex);
+    struct Task* task = create_task();
+    task->arg = NULL;
+    task->f = pthread_exit;
+    for (unsigned i = 0; i < pool->num; i++){
+        wsqueue_push(pool->tasks, (struct list_node*) task);
+    }
+    for (unsigned i = 0; i < pool->num; i++){
+        pthread_join(pool->threads[i], NULL);
+    }
     free(pool->threads);
+    destroy_task(task);
     wsqueue_finit(pool->tasks);
     free(pool->tasks);
 }

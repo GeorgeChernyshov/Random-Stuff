@@ -104,15 +104,6 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     args->cond_exit = &cond_exit;
     submit_qsort_task(0, N, args);
     pthread_cond_wait(&cond_exit, &done_mutex);
-    for (unsigned i = 0; i < pool->num; i++){
-        struct Task* task = create_task();
-        task->arg = NULL;
-        task->f = pthread_exit;
-        wsqueue_push(pool->tasks, (struct list_node*) task);
-    }
-    for (unsigned i = 0; i < pool->num; i++){
-        pthread_join(pool->threads[i], NULL);
-    }
     thpool_finit(pool);
     free(args);
     pthread_mutex_destroy(&done_mutex);
