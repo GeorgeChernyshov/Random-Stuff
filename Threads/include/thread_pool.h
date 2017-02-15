@@ -18,8 +18,6 @@ struct ThreadPool {
     struct wsqueue* tasks;
     unsigned num;
     pthread_mutex_t pool_mutex;
-    pthread_mutex_t done_mutex;
-    pthread_cond_t cond_exit;
 };
 
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm);
