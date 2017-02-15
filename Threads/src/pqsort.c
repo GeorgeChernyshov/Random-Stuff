@@ -15,6 +15,7 @@ struct Args {
     struct ThreadPool* pool;
     pthread_mutex_t *done_mutex;
     pthread_cond_t *cond_exit;
+    struct Task* task;
 };
 
 void pqsort(void* a);
@@ -30,6 +31,7 @@ void create_args(struct Task* task, int left, int right, struct Args *ar){
     args->done_mutex = ar->done_mutex;
     args->cond_exit = ar->cond_exit;
     task->arg = args;
+    args->task = task;
 }
 
 int q_partition(int left, int right, int* a){
@@ -81,6 +83,7 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
+    destroy_task(args->task);
 }
 
 void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool, int threads_num){
@@ -106,7 +109,6 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
         task->arg = NULL;
         task->f = pthread_exit;
         wsqueue_push(pool->tasks, (struct list_node*) task);
-        destroy_task(task);
     }
     for (unsigned i = 0; i < pool->num; i++){
         pthread_join(pool->threads[i], NULL);

@@ -10,11 +10,7 @@ void* thpool_go(void* arg){
         struct list_node* node = wsqueue_pop(pool->tasks);
         if(node){
             struct Task* task = (struct Task*) node;
-            if(task->f) task->f(task->arg);
-            pthread_mutex_lock(&task->mutex);
-            pthread_cond_signal(&task->cond);
-            pthread_mutex_unlock(&task->mutex);
-            destroy_task(task);
+            task->f(task->arg);
         }
     }
     return NULL;
