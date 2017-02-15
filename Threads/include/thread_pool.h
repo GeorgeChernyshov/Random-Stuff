@@ -11,16 +11,15 @@ struct Task {
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 	int complete;
-	int free_arg;
-	int free;
 };
 
 struct ThreadPool {
     pthread_t* threads;
     struct wsqueue* tasks;
     unsigned num;
-    int is_working;
     pthread_mutex_t pool_mutex;
+    pthread_mutex_t done_mutex;
+    pthread_cond_t cond_exit;
 };
 
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm);
