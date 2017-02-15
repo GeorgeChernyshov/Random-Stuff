@@ -17,13 +17,10 @@ struct ThreadPool {
     pthread_t* threads;
     struct wsqueue* tasks;
     unsigned num;
-    pthread_mutex_t pool_mutex;
 };
 
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm);
 void thpool_submit(struct ThreadPool* pool, struct Task* task);
 void thpool_wait(struct Task* task);
 void thpool_finit(struct ThreadPool* pool);
-struct Task* create_task(void);
-void destroy_task(struct Task* task);
 
