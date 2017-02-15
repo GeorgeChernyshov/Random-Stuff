@@ -19,18 +19,17 @@ struct Args {
 
 void pqsort(void* a);
 
-void create_args(struct Task* task, int left, int right, int depth, int max_depth, int* a, struct ThreadPool* pool, pthread_mutex_t *done_mutex, pthread_cond_t *cond_exit){
+void create_args(struct Task* task, int left, int right, struct Args *ar){
     struct Args* args = malloc(sizeof(struct Args));
-    args->depth = depth;
-    args->max_depth = max_depth;
+    args->depth = ar->depth;
+    args->max_depth = ar->max_depth;
     args->left = left;
     args->right = right;
-    args->arr = a;
-    args->pool = pool;
-    args->done_mutex = done_mutex;
-    args->cond_exit = cond_exit;
+    args->arr = ar->arr;
+    args->pool = ar->pool;
+    args->done_mutex = ar->done_mutex;
+    args->cond_exit = ar->cond_exit;
     task->arg = args;
-    task->free_arg = 1;
 }
 
 int q_partition(int left, int right, int* a){
@@ -49,25 +48,25 @@ int q_partition(int left, int right, int* a){
     return i;
 }
 
-void submit_qsort_task(int depth, int max_depth, int left, int right, int* a, struct ThreadPool* pool, pthread_mutex_t *done_mutex, pthread_cond_t *cond_exit){
-    if(depth >= max_depth){
-        qsort(a+left, (right-left), sizeof (int), (int(*) (const void *, const void *)) comp);
-        pthread_mutex_lock(done_mutex);
+void submit_qsort_task(int left, int right, struct Args* args){
+    if(args->depth >= args->max_depth){
+        qsort(args->arr+left, (right-left), sizeof (int), (int(*) (const void *, const void *)) comp);
+        pthread_mutex_lock(args->done_mutex);
         done -= (right-left);
-        if(done == 0) pthread_cond_signal(cond_exit);
-        pthread_mutex_unlock(done_mutex);
+        if(done == 0) pthread_cond_signal(args->cond_exit);
+        pthread_mutex_unlock(args->done_mutex);
     }else{
         if(right - left == 1) {
-            pthread_mutex_lock(done_mutex);
+            pthread_mutex_lock(args->done_mutex);
             done--;
-            if(done == 0) pthread_cond_signal(cond_exit);  
-            pthread_mutex_unlock(done_mutex);
+            if(done == 0) pthread_cond_signal(args->cond_exit);  
+            pthread_mutex_unlock(args->done_mutex);
         }
         if(right - left > 1) {
             struct Task* task = create_task();
             task->f = pqsort;
-            create_args(task, left, right, depth, max_depth, a, pool, done_mutex, cond_exit);
-            thpool_submit(pool, task);
+            create_args(task, left, right, args);
+            thpool_submit(args->pool, task);
         }   
     }
 }
@@ -80,20 +79,40 @@ void pqsort(void* a){
     struct Args* args = a;
     int new_border = q_partition(args->left, args->right, args->arr);
     args->depth++;
-    submit_qsort_task(args->depth, args->max_depth, args->left, new_border, args->arr, args->pool, args->done_mutex, args->cond_exit);
-    submit_qsort_task(args->depth, args->max_depth, new_border, args->right, args->arr, args->pool, args->done_mutex, args->cond_exit);
+    submit_qsort_task(args->left, new_border, args);
+    submit_qsort_task(new_border, args->right, args);
 }
 
 void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool, int threads_num){
     done = N;
+    thpool_init(pool, threads_num);
     pthread_mutex_t done_mutex;
     pthread_cond_t cond_exit;
     pthread_mutex_init(&done_mutex, NULL);
     pthread_cond_init(&cond_exit, NULL);
-    thpool_init(pool, threads_num);
-    submit_qsort_task(depth, max_depth, 0, N, x, pool, &done_mutex, &cond_exit);
+    struct Args* args = malloc(sizeof(struct Args));
+    args->depth = depth;
+    args->max_depth = max_depth;
+    args->left = 0;
+    args->right = N;
+    args->arr = x;
+    args->pool = pool;
+    args->done_mutex = &done_mutex;
+    args->cond_exit = &cond_exit;
+    submit_qsort_task(0, N, args);
     pthread_cond_wait(&cond_exit, &done_mutex);
+    for (unsigned i = 0; i < pool->num; i++){
+        struct Task* task = create_task();
+        task->arg = NULL;
+        task->f = pthread_exit;
+        wsqueue_push(pool->tasks, (struct list_node*) task);
+        destroy_task(task);
+    }
+    for (unsigned i = 0; i < pool->num; i++){
+        pthread_join(pool->threads[i], NULL);
+    }
     thpool_finit(pool);
+    free(args);
     pthread_mutex_destroy(&done_mutex);
     pthread_cond_destroy(&cond_exit);
 }

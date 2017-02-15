@@ -12,11 +12,9 @@ void* thpool_go(void* arg){
             struct Task* task = (struct Task*) node;
             if(task->f) task->f(task->arg);
             pthread_mutex_lock(&task->mutex);
-            task->complete = 1;
             pthread_cond_signal(&task->cond);
             pthread_mutex_unlock(&task->mutex);
             destroy_task(task);
-            
         }
     }
     return NULL;
@@ -24,23 +22,19 @@ void* thpool_go(void* arg){
 
 struct Task* create_task(void){
     struct Task* task = malloc(sizeof(struct Task));
-    task->free_arg = 0;
-    task->free = 1;
-    task->complete = 0;
     pthread_mutex_init(&task->mutex, NULL);
     pthread_cond_init(&task->cond, NULL);
     return task;
 }
 
 void destroy_task(struct Task* task){
+    free(task->arg);
     pthread_mutex_destroy(&task->mutex);
     pthread_cond_destroy(&task->cond);
-    if (task->free_arg) free(task->arg);
-    if (task->free) free(task);
+    free(task);    
 }
 
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
-    pool->is_working = 1;
     pthread_mutex_init(&pool->pool_mutex, NULL);
     pool->threads = malloc(threads_nm * sizeof(pthread_t));
     pool->tasks = malloc(sizeof(struct wsqueue));
@@ -60,9 +54,7 @@ void thpool_finit(struct ThreadPool* pool){
 
 void thpool_submit(struct ThreadPool* pool, struct Task* task){
     pthread_mutex_lock(&pool->pool_mutex);
-    if(pool->is_working){ 
-        wsqueue_push(pool->tasks, (struct list_node*) task);
-    }
+    wsqueue_push(pool->tasks, (struct list_node*) task);
     pthread_mutex_unlock(&pool->pool_mutex);
 }
 
