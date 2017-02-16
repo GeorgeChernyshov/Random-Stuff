@@ -7,6 +7,7 @@
 struct Task {
     struct list_node link;
 	void (*f)(void *);
+	void (*destroy_task)(struct Task* task);
 	void* arg;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
