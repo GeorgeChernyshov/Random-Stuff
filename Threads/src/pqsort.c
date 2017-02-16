@@ -83,6 +83,7 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
+    pthread_cond_signal(&args->task->cond);
     args->task->complete = 1;
     destroy_task(args->task);
 }
@@ -96,6 +97,8 @@ struct Task* create_task(void){
 }
 
 void destroy_task(struct Task* task){
+    while(!(task->complete)){
+    }
     free(task->arg);
     pthread_mutex_destroy(&task->mutex);
     pthread_cond_destroy(&task->cond);
