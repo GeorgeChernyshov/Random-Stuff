@@ -97,8 +97,6 @@ struct Task* create_task(void){
 }
 
 void destroy_task(struct Task* task){
-    while(!(task->complete)){
-    }
     free(task->arg);
     pthread_mutex_destroy(&task->mutex);
     pthread_cond_destroy(&task->cond);
