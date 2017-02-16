@@ -5,7 +5,8 @@
 #include "thread_pool.h"
 
 int done;
-
+struct wsqueue queue;
+    
 struct Args {
     int depth;
     int max_depth;
@@ -19,7 +20,6 @@ struct Args {
 };
 
 void pqsort(void* a);
-void destroy_pqsort_task(struct Task* task);
 
 void create_args(struct Task* task, int left, int right, struct Args *ar){
     struct Args* args = malloc(sizeof(struct Args));
@@ -89,13 +89,13 @@ void pqsort(void* a){
 struct Task* create_task(void){
     struct Task* task = malloc(sizeof(struct Task));
     task->complete = 0;
-    task->destroy_task = destroy_pqsort_task;
     pthread_mutex_init(&task->mutex, NULL);
     pthread_cond_init(&task->cond, NULL);
+    wsqueue_push(&queue, (struct list_node*) (task));
     return task;
 }
 
-void destroy_pqsort_task(struct Task* task){
+void destroy_task(struct Task* task){
     free(task->arg);
     pthread_mutex_destroy(&task->mutex);
     pthread_cond_destroy(&task->cond);
@@ -110,6 +110,7 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     pthread_mutex_init(&done_mutex, NULL);
     pthread_cond_init(&cond_exit, NULL);
     struct Args* args = malloc(sizeof(struct Args));
+    wsqueue_init(&queue);
     args->depth = depth;
     args->max_depth = max_depth;
     args->left = 0;

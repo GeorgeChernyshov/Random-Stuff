@@ -15,7 +15,6 @@ void* thpool_go(void* arg){
             task->f(task->arg);
             pthread_cond_signal(&task->cond);
             task->complete = 1;
-            task->destroy_task(task);
         }
     }
     return NULL;
@@ -52,5 +51,7 @@ void thpool_submit(struct ThreadPool* pool, struct Task* task){
 }
 
 void thpool_wait(struct Task* task){
-    pthread_cond_wait(&task->cond, &task->mutex);
+    pthread_mutex_lock(&task->mutex);
+    if(!(task->complete)) pthread_cond_wait(&task->cond, &task->mutex);
+    pthread_mutex_unlock(&task->mutex);
 }
