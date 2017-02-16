@@ -19,6 +19,7 @@ struct Args {
 };
 
 void pqsort(void* a);
+void destroy_pqsort_task(struct Task* task);
 
 void create_args(struct Task* task, int left, int right, struct Args *ar){
     struct Args* args = malloc(sizeof(struct Args));
@@ -83,20 +84,18 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
-    pthread_cond_signal(&args->task->cond);
-    args->task->complete = 1;
-    destroy_task(args->task);
 }
 
 struct Task* create_task(void){
     struct Task* task = malloc(sizeof(struct Task));
     task->complete = 0;
+    task->destroy_task = destroy_pqsort_task;
     pthread_mutex_init(&task->mutex, NULL);
     pthread_cond_init(&task->cond, NULL);
     return task;
 }
 
-void destroy_task(struct Task* task){
+void destroy_pqsort_task(struct Task* task){
     free(task->arg);
     pthread_mutex_destroy(&task->mutex);
     pthread_cond_destroy(&task->cond);
