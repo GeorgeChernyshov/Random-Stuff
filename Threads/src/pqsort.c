@@ -106,7 +106,6 @@ void pqsort(void* a){
             wsqueue_push(&queue, (struct list_node*) task);
         }
     }
-    args->task->complete = 1;
 }
 
 struct Task* create_task(void){
