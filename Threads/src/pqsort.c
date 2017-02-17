@@ -6,6 +6,7 @@
 
 int done;
 struct wsqueue queue;
+struct wsqueue back;
     
 struct Args {
     int depth;
@@ -85,6 +86,27 @@ void pqsort(void* a){
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
     wsqueue_push(&queue, (struct list_node*) (args->task));
+    int k = queue.squeue.queue.size;
+    for(int i = 0; i < k; i++){
+        struct list_node* node = wsqueue_pop(&queue);
+        if(node){
+            struct Task* task = (struct Task*) node;
+            if(task->complete){
+                destroy_task(task);
+            }else{
+                wsqueue_push(&back, (struct list_node*) task);
+            }
+        }
+    }
+    k = back.squeue.queue.size;
+    for(int i = 0; i < k; i++){
+        struct list_node* node = wsqueue_pop(&back);
+        if(node){
+            struct Task* task = (struct Task*) node;
+            wsqueue_push(&queue, (struct list_node*) task);
+        }
+    }
+    args->task->complete = 1;
 }
 
 struct Task* create_task(void){
@@ -111,6 +133,7 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     pthread_cond_init(&cond_exit, NULL);
     struct Args* args = malloc(sizeof(struct Args));
     wsqueue_init(&queue);
+    wsqueue_init(&back);    
     args->depth = depth;
     args->max_depth = max_depth;
     args->left = 0;

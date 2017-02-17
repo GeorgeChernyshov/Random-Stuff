@@ -13,8 +13,9 @@ void* thpool_go(void* arg){
         if(node){
             struct Task* task = (struct Task*) node;
             task->f(task->arg);
-            pthread_cond_signal(&task->cond);
-            task->complete = 1;
+            while(!(task->complete)){
+                pthread_cond_signal(&task->cond);
+            }
         }
     }
     return NULL;
