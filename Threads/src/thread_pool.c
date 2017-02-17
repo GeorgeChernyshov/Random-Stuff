@@ -13,7 +13,7 @@ void* thpool_go(void* arg){
             task->f(task->arg);
             pthread_mutex_lock(&task->mutex);
             task->complete = 1;
-            pthread_cond_signal(&task->cond);
+            pthread_cond_broadcast(&task->cond);
             pthread_mutex_unlock(&task->mutex);            
         }
     }
