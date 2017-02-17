@@ -85,14 +85,6 @@ void pqsort(void* a){
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
     wsqueue_push(&queue, (struct list_node*) (args->task));
-    int k = queue.squeue.queue.size;
-    for(int i = 0; i < k; i++){
-        struct Task* task = (struct Task*)(&queue.squeue.queue.head);
-        if(task->complete == 1){
-            wsqueue_pop(&queue);
-            destroy_task(task);
-        }
-    }
 }
 
 struct Task* create_task(void){
