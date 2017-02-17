@@ -5,10 +5,9 @@
 #include "thread_pool.h"
 
 int done;
-struct wsqueue queue;
-struct wsqueue back;
     
 struct Args {
+    int done;
     int depth;
     int max_depth;
     int left;
@@ -18,6 +17,7 @@ struct Args {
     pthread_mutex_t *done_mutex;
     pthread_cond_t *cond_exit;
     struct Task* task;
+    struct wsqueue* queue;
 };
 
 void pqsort(void* a);
@@ -34,6 +34,7 @@ void create_args(struct Task* task, int left, int right, struct Args *ar){
     args->cond_exit = ar->cond_exit;
     task->arg = args;
     args->task = task;
+    args->queue = ar->queue;
 }
 
 int q_partition(int left, int right, int* a){
@@ -85,27 +86,7 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
-    wsqueue_push(&queue, (struct list_node*) (args->task));
-    int k = queue.squeue.queue.size;
-    for(int i = 0; i < k; i++){
-        struct list_node* node = wsqueue_pop(&queue);
-        if(node){
-            struct Task* task = (struct Task*) node;
-            if(task->complete){
-                destroy_task(task);
-            }else{
-                wsqueue_push(&back, (struct list_node*) task);
-            }
-        }
-    }
-    k = back.squeue.queue.size;
-    for(int i = 0; i < k; i++){
-        struct list_node* node = wsqueue_pop(&back);
-        if(node){
-            struct Task* task = (struct Task*) node;
-            wsqueue_push(&queue, (struct list_node*) task);
-        }
-    }
+    wsqueue_push(args->queue, (struct list_node*) (args->task));
 }
 
 struct Task* create_task(void){
@@ -123,16 +104,15 @@ void destroy_task(struct Task* task){
     free(task);    
 }
 
-void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool, int threads_num){
+void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool){
     done = N;
-    thpool_init(pool, threads_num);
     pthread_mutex_t done_mutex;
     pthread_cond_t cond_exit;
     pthread_mutex_init(&done_mutex, NULL);
     pthread_cond_init(&cond_exit, NULL);
     struct Args* args = malloc(sizeof(struct Args));
-    wsqueue_init(&queue);
-    wsqueue_init(&back);    
+    struct wsqueue queue;
+    wsqueue_init(&queue);  
     args->depth = depth;
     args->max_depth = max_depth;
     args->left = 0;
@@ -141,9 +121,20 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     args->pool = pool;
     args->done_mutex = &done_mutex;
     args->cond_exit = &cond_exit;
+    args->queue = &queue;
     submit_qsort_task(0, N, args);
     pthread_cond_wait(&cond_exit, &done_mutex);
-    thpool_finit(pool);
+    int k = queue.squeue.queue.size;
+    for(int i = 0; i < k; i++){
+        struct list_node* node = wsqueue_pop(&queue);
+        if(node){
+            struct Task* task = (struct Task*) node;
+            if(task->complete){
+                destroy_task(task);
+            }
+        }
+    }
+    wsqueue_finit(&queue);
     free(args);
     pthread_mutex_destroy(&done_mutex);
     pthread_cond_destroy(&cond_exit);

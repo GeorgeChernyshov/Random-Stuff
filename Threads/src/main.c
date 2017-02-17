@@ -17,7 +17,9 @@ int main(int argc, char **argv){
         }
         qsort(y, N, sizeof (int), (int(*) (const void *, const void *)) comp);
         struct ThreadPool pool;
+        thpool_init(&pool, threads_num);
         sort_array(0, d, x, N, &pool, threads_num);
+        thpool_finit(&pool);
         for (int i = 0; i < N; i++){
             assert(x[i] == y[i]);
         }

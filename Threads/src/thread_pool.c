@@ -3,8 +3,6 @@
 #include "thread_pool.h"
 #include <pthread.h>
 
-struct wsqueue ws;
-
 void* thpool_go(void* arg){
     struct ThreadPool* pool = arg;
     while(1){
@@ -13,8 +11,10 @@ void* thpool_go(void* arg){
         if(node){
             struct Task* task = (struct Task*) node;
             task->f(task->arg);
+            pthread_mutex_lock(&task->mutex);
             task->complete = 1;
             pthread_cond_signal(&task->cond);
+            pthread_mutex_unlock(&task->mutex);            
         }
     }
     return NULL;
@@ -22,9 +22,8 @@ void* thpool_go(void* arg){
 
 void thpool_init(struct ThreadPool* pool, unsigned threads_nm){
     pool->threads = malloc(threads_nm * sizeof(pthread_t));
-    wsqueue_init(&ws);
-    pool->tasks = &ws;
     pool->num = threads_nm;
+    wsqueue_init(pool->tasks);
     for (unsigned i = 0; i < threads_nm; i++){
         pthread_create(&pool->threads[i], NULL, thpool_go, pool);
     }
@@ -42,7 +41,6 @@ void thpool_finit(struct ThreadPool* pool){
         pthread_join(pool->threads[i], NULL);
     }
     free(pool->threads);
-    free(task.arg);
     wsqueue_finit(pool->tasks);
 }
 
