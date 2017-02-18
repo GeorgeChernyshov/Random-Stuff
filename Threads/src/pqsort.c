@@ -18,22 +18,20 @@ struct Args {
     int depth;
     int left;
     int right;
-    struct Task* task;
+    struct Task task;
     struct Non_changeable* n;
 };
 
 void pqsort(void* a);
 
 struct Task* create_args(int left, int right, struct Args *ar){
-    struct Task* task = create_task();
-    task->f = pqsort;
     struct Args* args = malloc(sizeof(struct Args));
+    create_task(&args->task);
     args->n = ar->n;
     args->left = left;
     args->right = right;
-    task->arg = args;
-    args->task = task;
-    return task;
+    args->task.arg = args;
+    return &args->task;
 }
 
 int q_partition(int left, int right, int* a){
@@ -83,22 +81,21 @@ void pqsort(void* a){
     args->depth++;
     submit_qsort_task(args->left, new_border, args);
     submit_qsort_task(new_border, args->right, args);
-    squeue_push(args->n->queue, (struct list_node*) (args->task));
+    squeue_push(args->n->queue, (struct list_node*) (args));
 }
 
-struct Task* create_task(void){
-    struct Task* task = malloc(sizeof(struct Task));
+struct Task* create_task(struct Task* task){
+    task->f = pqsort;
     task->complete = 0;
     pthread_mutex_init(&task->mutex, NULL);
     pthread_cond_init(&task->cond, NULL);
     return task;
 }
 
-void destroy_task(struct Task* task){
-    free(task->arg);
-    pthread_mutex_destroy(&task->mutex);
-    pthread_cond_destroy(&task->cond);
-    free(task);    
+void destroy_args(struct Args* args){
+    pthread_mutex_destroy(&args->task.mutex);
+    pthread_cond_destroy(&args->task.cond);
+    free(args);    
 }
 
 void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool){
@@ -130,10 +127,8 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     pthread_cond_wait(&cond_exit, &done_mutex);
     while(queue.queue.size > 0){
         struct list_node* node = squeue_pop(&queue);
-        if(node){
-            struct Task* task = (struct Task*) node;
-            destroy_task(task);
-        }
+        struct Args* args = (struct Args*) node;
+        destroy_args(args);
     }
     squeue_finit(&queue);
     pthread_mutex_destroy(&done_mutex);
