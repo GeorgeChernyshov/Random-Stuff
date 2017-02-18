@@ -72,15 +72,13 @@ void submit_qsort_task(int left, int right, struct Args* args){
 }
 
 int comp (const int *i, const int *j){
-    int ans = 1;
-    if(*i < 0 && *j > 0){
-        ans = *i;
-    }else if(*i > 0 && *j < 0){
-        ans = *i;
-    }else{
-        ans = *i - *j;
+    if(*i > *j){
+        return 1;
     }
-    return ans;
+    if(*i == *j){
+        return 0;
+    }
+    return -1;
 }
 
 void pqsort(void* a){
