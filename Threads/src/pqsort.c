@@ -72,7 +72,15 @@ void submit_qsort_task(int left, int right, struct Args* args){
 }
 
 int comp (const int *i, const int *j){
-     return *i - *j;
+    int ans = 1;
+    if(*i < 0 && *j > 0){
+        ans = *i;
+    }else if(*i > 0 && *j < 0){
+        ans = *i;
+    }else{
+        ans = *i - *j;
+    }
+    return ans;
 }
 
 void pqsort(void* a){
@@ -124,7 +132,11 @@ void sort_array(int depth, int max_depth, int* x, int N, struct ThreadPool* pool
     args.n = &n;
 
     submit_qsort_task(0, N, &args);
-    pthread_cond_wait(&cond_exit, &done_mutex);
+    pthread_mutex_lock(&done_mutex);
+    while(*done > 0){
+        pthread_cond_wait(&cond_exit, &done_mutex);
+    }
+    pthread_mutex_unlock(&done_mutex);
     while(queue.queue.size > 0){
         struct list_node* node = squeue_pop(&queue);
         struct Args* args = (struct Args*) node;
