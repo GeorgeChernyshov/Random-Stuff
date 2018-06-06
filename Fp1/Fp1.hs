@@ -1,3 +1,4 @@
+--Some basic Haskell functions to mess with an array. Nothing to say really.
 head' :: [a] -> a
 head' (xs:_) = xs
 
@@ -9,7 +10,7 @@ take' :: Int -> [a] -> [a]
 take' 0 x = []
 take' a (x:xs) = (x:take' (a-1) xs)
                          
-
+--This is to remove element.
 drop' :: Int -> [a] -> [a]
 drop' 0 x = x
 drop' a [] = []
@@ -30,6 +31,7 @@ concat' x [] = x
 concat' [] (y:ys) = (y:ys)
 concat' (x:xs) y = (x:concat' xs y)
 
+--This is actually interesting. QuickSort is that easy to do here.
 quickSort' :: Ord a => [a] -> [a]
 quickSort' [] = []
 quickSort' (x:xs) = 
