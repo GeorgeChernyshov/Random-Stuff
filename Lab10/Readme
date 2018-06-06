@@ -1,0 +1,4 @@
+This is QT application that has a database of various shapes with the ability to add and delete them, whow one shape only, 
+and hide certain objects. It also has connections between objects.
+Reminder
+At the moment or writing this I am really bad at QT, so there is a lot of bad coding and bad decisions
