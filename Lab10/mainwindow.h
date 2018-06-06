@@ -8,7 +8,7 @@
 #include <QTableView>
 #include <QPainter>
 
-
+//Btw QTCreator is so good
 namespace Ui {
 class MainWindow;
 }
@@ -33,7 +33,7 @@ private slots:
     void on_hidetriangles_toggled(bool checked);
 
     void on_connectbutton_clicked();
-
+//A lot of stuff underground
 private:
     Ui::MainWindow *ui;
     QSqlTableModel* model;
