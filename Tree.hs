@@ -1,5 +1,5 @@
 import Prelude hiding (lookup)
-
+--Not balanced, but it does ts job in a 30 lines of code. Beautiful
 data BinaryTree k v = Node k v (BinaryTree k v)(BinaryTree k v) | Nil deriving Show
 
 lookup :: Ord k => k -> BinaryTree k v -> Maybe v
@@ -14,7 +14,7 @@ insert k1 v1 Nil = (Node k1 v1 Nil Nil)
 insert k1 v1 (Node k v lt rt) | k1 == k = (Node k v1 lt rt)
                               | k1 > k = (Node k v lt (insert k1 v1 rt))
                               | otherwise = (Node k v (insert k1 v1 lt) rt)
-
+--It is even mergeable. Nice one if you ask me
 merge :: Ord k => BinaryTree k v -> BinaryTree k v -> BinaryTree k v
 merge x Nil = x
 merge Nil x = x
