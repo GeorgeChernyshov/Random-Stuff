@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 
+//Now I know why I shouldn't use namespace std everywhere I can. But back then I thought that I rock
 using namespace std;
 
 Board::Board(){
@@ -12,6 +13,7 @@ Board::Board(){
     }
 }
 
+//Here are the functions that allow you to actually play the game
 bool Board::canMove(int x, int y){
     bool b = 0;
     if(x < 0 || x > 9 || y < 0 || y > 9){
@@ -31,6 +33,10 @@ void Board::move(int x, int y, char sign){
     }
 }
 
+//Warning! Some bad coding below. Dont do this at home.
+//I dont even want to read it, so there will be no more comments.
+//If I dont want to read it, probably you shouldnt too.
+//I wonder how much I can improve this section now, but meh
 state Board::isWin(){
     int row;
     int prev;
