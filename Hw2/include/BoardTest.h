@@ -1,4 +1,5 @@
 #pragma once
+//Yeah, defines to the rescue
 #define DO_CHECK(EXPR) BoardTest::check(EXPR, __FUNCTION__, __FILE__, __LINE__);
 #include "Test.h"
 
