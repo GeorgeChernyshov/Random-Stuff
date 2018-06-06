@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#This is just awful
 import numpy as np
 def resize(p,n):
     while(p<n):
