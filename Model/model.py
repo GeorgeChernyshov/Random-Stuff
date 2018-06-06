@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-
+#This is a kind of programming language simulation. Had little idea what I was doing
+# This is a basic object. Kind of a dictionary that could contain anything
 class Scope:
     def __init__(self, parent=None):
         self.parent = parent
