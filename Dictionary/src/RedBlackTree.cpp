@@ -1,5 +1,5 @@
 #include "../include/RedBlackTree.h"
-
+//Why is this here?
 RedBlackTreeNode::~RedBlackTreeNode()
 {
 }
@@ -28,7 +28,8 @@ RedBlackTreeNode* RedBlackTreeNode::sibling() {
         return this->parent->right;
     return this->parent->left;
 }
-
+//Most important functions
+//Used for balancing the tree
 void RedBlackTreeNode::rotate_left()
 {
     RedBlackTreeNode* node = this->right;
@@ -91,7 +92,8 @@ bool RedBlackTree::add(std::string word, int pos)
 {
     return add(word, pos, head_);
 }
-
+//Basic recursion
+//I think there is a way to make this easier
 bool RedBlackTree::add(std::string word, int pos, RedBlackTreeNode* node)
 {
     if(head_->color == 0) {
