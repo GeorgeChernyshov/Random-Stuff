@@ -9,7 +9,8 @@ void Initialize()
         }
     }
 }
-
+//This can be useful for testing
+//Uses Negative Geometrical Distribution
 void GenerateGraph(int graphSize)
 {
     int N = 2*graphSize - (graphSize/2);
@@ -66,7 +67,7 @@ void PrintGraph(int (&gr)[1002][1002], int graphSize)
         std::cout << std::endl;
     }
 }
-
+//This is really useless
 void Shimbell(int pathlength, int graphSize)
 {
     int opt = -1;
@@ -105,7 +106,7 @@ void Shimbell(int pathlength, int graphSize)
     }
     PrintGraph(newgraph, graphSize);
 }
-
+//Nothing to say
 bool bfs(int v, int endv, int graphSize)
 {
     for(int i = 0; i < graphSize; ++i) marked[i] = 0;
@@ -158,7 +159,7 @@ int ReadGraph(std::string filename, int graphSize)
     }
     return graphSize;
 }
-
+//Nuff said
 void Floyd(int graphSize)
 {
     for(int i = 0; i < graphSize; ++i)
@@ -177,7 +178,7 @@ void Floyd(int graphSize)
     PrintGraph(floyd, graphSize);
     std::cout << op << " operations\n";
 }
-
+//This is made on arrays, not on heaps. So, works slow on graphs with O(v) edges
 void Dijkstra(int v, int graphSize)
 {
     for(int i = 0; i < graphSize; i++){
@@ -291,7 +292,7 @@ void Kruskal(int graphSize)
     PrintGraph(tree, graphSize);
     std::cout << op << " operations\n";
 }
-
+//This is horrible, really bad code
 void Prim(int graphSize)
 {
     int op = 0;
@@ -353,7 +354,7 @@ void Prim(int graphSize)
     PrintGraph(tree, graphSize);
     std::cout << op << " operations\n";
 }
-
+//Maybe this will be useful like once in my life
 void Kirhgoff(int graphSize)
 {
     for(int i = 0; i < graphSize; i++){
@@ -397,7 +398,7 @@ void Kirhgoff(int graphSize)
     }
     std::cout << std::abs(ans) << std::endl;
 }
-
+//dfs changed for building Pruffer's Code
 void dfs(int v, int graphSize)
 {
     deg[v] = 0;
@@ -505,7 +506,7 @@ void MakeHamilton(int graphSize)
     PrintGraph(cycles, graphSize);
     std::cout << std::endl;
 }
-
+//Basically dfs, works good only on graphs with O(v) edges
 void Hamilton(int graphSize, int A, int v)
 {
     int cur = numb;
@@ -574,7 +575,7 @@ void MakeEuler(int graphSize)
     std::cout << "New graph\n";
     PrintGraph(cycles, graphSize);
 }
-
+//Basically bfs
 void Euler(int graphSize)
 {
     std::vector<Edge> edges;
@@ -643,7 +644,7 @@ void InitializeFlows(int graphSize)
         flowedges[i].flow  = 0;
     }
 }
-
+//O(k*(v+e)), nothing too complicated
 void FindMincostFlow(int graphSize)
 {
     int total = 0;
