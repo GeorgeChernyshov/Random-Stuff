@@ -1,6 +1,6 @@
 #include "/home/ls/Graphs/include/GraphOperations.h"
 #include "/home/ls/Graphs/include/Pathfinder.h"
-
+//Nice and simple menu for a change. I dont even feel bad for making it
 using namespace std;
 
 int main()
