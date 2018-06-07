@@ -1,5 +1,7 @@
 #include "shapedelegate.h"
-
+//This delegate shows a shape type in a table.
+//For example, if it is a rectangle, a little square would be drawn in a table.
+//If there are a lot of rectangles, three squares would be drawn
 void ShapeDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                          const QModelIndex &index) const
 {
