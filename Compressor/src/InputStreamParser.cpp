@@ -20,12 +20,12 @@ void InputStreamParser::CountQuantities()
     is_.clear();
     is_.seekg(0, std::ios::beg);
 }
-
+//I dont know why I did this
 void InputStreamParser::GetQuantity(int& q, int i)
 {
     q = quantities_[i];
 }
-
+//For decompressing
 void InputStreamParser::ParseQuantities()
 {
     unsigned char temp;
