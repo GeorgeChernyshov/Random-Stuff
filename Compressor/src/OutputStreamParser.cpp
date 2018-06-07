@@ -1,6 +1,6 @@
 #include "/home/ls/Compressor/include/OutputStreamParser.h"
 #include <iostream>
-
+//In beginning of the archive, there are 256 numbers - quantities of the symbols
 void OutputStreamParser::Huffmanize(std::istream& is, HuffCoder& coder){
     int total = 0;
     for(int i = 0; i < 256; i++)
@@ -88,7 +88,7 @@ void OutputStreamParser::Dehuffmanize(std::istream& is, HuffCoder& coder)
         }
     }
 }
-
+//This is pretty self-explainatory
 void OutputStreamParser::RLE(std::istream& is)
 {
     char* temp = &buffer_;
