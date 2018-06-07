@@ -1,6 +1,6 @@
 #include "/home/ls/Compressor/include/HuffCoder.h"
 #include <iostream>
-
+//I'm using the priority queue for this
 HuffCoder::HuffCoder(int* quantities)
 {
     counter_ = 0;
@@ -26,7 +26,7 @@ HuffCoder::HuffCoder(int* quantities)
         queue_.push(p);
     }
 }
-
+//String codes is probably not the best choise
 void HuffCoder::BuildCodes()
 {
     for(int i = counter_ - 2; i >= 0; i--)
