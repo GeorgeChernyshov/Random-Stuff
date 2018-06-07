@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+//Initializing and creating the database
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     db.setDatabaseName(":memory:");
     db.open();
 
+    //Aside from creating a database, we create one rectangle, just for the sakr of it
     QSqlQuery query;
     query.exec("create table shapes (id int primary key, type varchar(20), connections varchar(100), number int)");
     query.exec("insert into shapes values(0, \"Rect\", null, 1)");
@@ -28,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("Number"));
 
     ui->tableView->setModel(model);
-
+//This is for choosing which item to create
     ui->shapetype->insertItem(0, "Rect");
     ui->shapetype->insertItem(1, "Ellipse");
     ui->shapetype->insertItem(2, "Triangle");
@@ -53,7 +55,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
+//Repainting everything
 void MainWindow::paintEvent(QPaintEvent *e){
     QPainter painter(this);
     for(auto it = all.begin(); it != all.end(); ++it){
