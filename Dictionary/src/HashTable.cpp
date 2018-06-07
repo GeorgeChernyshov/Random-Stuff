@@ -15,7 +15,7 @@ HashTable::~HashTable()
 {
     delete[] dict_;
 }
-
+//Collisions are resolved using lists
 void HashTable::add(std::string word, int pos)
 {
     std::pair<int, int> p = find(word);
@@ -51,7 +51,7 @@ std::pair<int, int> HashTable::find(std::string word)
     }
     return std::pair<int, int>(-1, -1);
 }
-
+//2x+3 - quite good number sequence
 void HashTable::resize()
 {
     int new_capacity = (2*capacity_) + 3;
@@ -70,7 +70,7 @@ void HashTable::resize()
     dict_ = new_dict;
     capacity_ = new_capacity;
 }
-
+//Polynomial Hashes
 int GetHash(std::string str, int capacity)
 {
     int hash_ = 0;
