@@ -41,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->WidthspinBox->setRange(1, 500);
     ui->HeightspinBox->setValue(100);
     ui->WidthspinBox->setValue(100);
+    /*Ok, I guess somewhere here I should explain the main logic. There are three arrays: of rectangles, ellipses and triangles
+    To connect them all into one instance there is a list of everything. List node contains type of shape, its index in array
+    and its ID, unigue for each item*/
     std::pair<int, std::pair<int, int>> p;
     p.first = id++;
     rects[rectcount] = new QRect(700, 100+10*id, ui->WidthspinBox->value(), ui->HeightspinBox->value());
@@ -58,6 +61,7 @@ MainWindow::~MainWindow()
 //Repainting everything
 void MainWindow::paintEvent(QPaintEvent *e){
     QPainter painter(this);
+    //Note that we're using the main list and try to evade the usage of three arrays
     for(auto it = all.begin(); it != all.end(); ++it){
        std::pair<int, std::pair<int, int>> p = *it;
        if(p.second.first == 0 && isshown[p.first]){
@@ -76,6 +80,7 @@ void MainWindow::paintEvent(QPaintEvent *e){
        } else if(p.second.first == 1 && isshown[p.first]){
            beg = ellipses[p.second.second]->center();
        } else if(p.second.first == 2 && isshown[p.first]){
+           //I dont like how this is done, but it is the best I came up with
            int X = triangles[p.second.second].point(0).x() + triangles[p.second.second].point(1).x() + triangles[p.second.second].point(2).x();
            X /= 3;
            int Y = triangles[p.second.second].point(0).y() + triangles[p.second.second].point(1).y() + triangles[p.second.second].point(2).y();
@@ -83,6 +88,7 @@ void MainWindow::paintEvent(QPaintEvent *e){
            beg.setX(X);
            beg.setY(Y);
        }
+       //And this is just code copying. Should've spend more time on this
        QSqlQuery query;
        query.prepare("select connections from shapes where id = :id");
        query.bindValue(":id", p.first);
@@ -111,11 +117,13 @@ void MainWindow::paintEvent(QPaintEvent *e){
                    break;
                }
            }
+           //50 lines of code above were just for this
            if(found) painter.drawLine(beg, end);
        }
     }
 }
-
+//When lmb is pressed, check all of the shapes to choose the one to hide or remove
+//Dont be scared with math below, it is really simple
 void MainWindow::mousePressEvent(QMouseEvent *e){
     std::pair<int, std::pair<int, int>> current;
     bool found = 0;
@@ -175,7 +183,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
     }
     repaint();
 }
-
+//Code repeating again. I'm sorry
+//Won't even comment the rest. Screw that
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
     std::pair<int, std::pair<int, int>> current;
     for(auto it = all.begin(); it != all.end(); ++it){
