@@ -1,0 +1,11 @@
+delimiter \\
+create procedure update_sale (
+	sale_id integer,
+    status_id integer
+)
+begin
+update sale set sale.status_id = status_id,
+	sale.dt_modified = now()
+    where sale.id = sale_id;
+end
+\\
