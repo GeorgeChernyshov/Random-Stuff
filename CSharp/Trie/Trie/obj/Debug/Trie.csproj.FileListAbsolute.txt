@@ -1,0 +1,6 @@
+C:\Users\Домашний\source\repos\Trie\Trie\obj\Debug\Trie.csprojResolveAssemblyReference.cache
+C:\Users\Домашний\source\repos\Trie\Trie\obj\Debug\Trie.csproj.CoreCompileInputs.cache
+C:\Users\Домашний\source\repos\Trie\Trie\bin\Debug\Trie.dll
+C:\Users\Домашний\source\repos\Trie\Trie\bin\Debug\Trie.pdb
+C:\Users\Домашний\source\repos\Trie\Trie\obj\Debug\Trie.dll
+C:\Users\Домашний\source\repos\Trie\Trie\obj\Debug\Trie.pdb
