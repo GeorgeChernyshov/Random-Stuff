@@ -1,0 +1,50 @@
+body {
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.foreground {
+    position: absolute;
+    width: 200px;
+    height: 300px;
+    background: url(../img/card-21.jpg);
+    z-index: 1;
+}
+
+.foreground:hover {
+    opacity: 0;
+}
+
+.foreground:active {
+    opacity: 1;
+    background: url(../img/card-23.jpg);
+}
+
+.question {
+    position: relative;
+    left: 40px;
+    top: 50px;
+    font-size: 35px;
+    z-index: 0;
+}
+
+.questionmark {
+    position: relative;
+    left: 130px;
+    top: 80px;
+    font-size: 70px;
+    z-index: 0;
+}
+
+.card {
+    width: 200px;
+    height: 300px;
+    background: url(../img/egg.png) 20% 90% no-repeat, url(../img/frame.jpg);
+    background-size: 50%, cover;
+    z-index: 0;
+}

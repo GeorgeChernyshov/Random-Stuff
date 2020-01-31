@@ -1,0 +1,51 @@
+body {
+    min-height: 100vh;
+    background-color: lightyellow;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gamefield {
+    display: flex;
+    margin-left: 30px;
+    background-color: lightgoldenrodyellow;
+    outline: 1px solid black;
+    flex-direction: row;
+}
+
+.gamefield-disabled {
+    display: flex;
+    align-items: center;
+}
+
+.scoreboard {
+    margin-left: 30px;
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.ball {
+    border-radius: 50%;
+}
+
+.startButton {
+    position: relative;
+    width: 200px;
+    height: 70px;
+    margin: auto;
+    background-color: sandybrown;
+    outline: 10px solid saddlebrown;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 800;
+}
