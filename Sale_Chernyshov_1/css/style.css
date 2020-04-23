@@ -1,0 +1,189 @@
+*
+{
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+/* обнул€ем все элементы *//* общие стили */
+html
+{
+    font-size: 75%;
+}
+body
+{
+    font: normal 1em/1.3 arial, helvetica, sans-serif;
+    color: #2f3a5f;
+    background: #f0f0f0;
+}
+
+header, nav, section, article, aside, footer
+{
+    display: block;
+    overflow: hidden;
+}
+/* выравниваем страницу по центру, делаем отступы и цвет фона */
+#main {
+    width: 940px;
+    min-height: 100%;
+    margin: 0 auto;
+    background: #d2dce0;
+}
+/* пишем класс дл€ шапки - header */
+    #main > header {
+        border: 2px solid #8f9394;
+        height: 130px;
+    }
+/* меню навигации */
+nav {
+    width: 100%;
+    height: 32px;
+    background: #bec2c3;
+}
+/* область основного контента */
+#main > section {
+    overflow: hidden;
+    padding-bottom: 20px;
+    border-right: dotted 1px #8f9394;
+    border-left: dotted 1px #8f9394;
+    margin: 5px;
+}
+section section
+{
+    float: left;
+    width: 700px;
+    min-height: 450px;
+    padding: 0px 10px 10px 20px;
+    background-image: url('../img/fon.png');
+    background-repeat: no-repeat, repeat-y;
+    background-position: right bottom, left top;
+    box-shadow: 2px 2px 10px black;
+}
+/* права€ часть */
+aside {
+    width: 200px;
+    background-color: #c8cfd1;
+    float: right;
+    padding: 0px 0px 25px 0px;
+    border-bottom-right-radius: 20px 20px;
+    border-top-left-radius: 20px 20px;
+    min-height: 433px;
+    box-shadow: 2px 2px 10px black;
+}
+/* нижн€€ часть - footer */
+footer {
+    height: 40px;
+    clear: both;
+    padding: 10px 30px 0 25px;
+    margin: 0px 0 0 0;
+    border-top: 1px solid #8f9394;
+}
+
+nav li
+{
+    float: left;
+    margin: 8px 20px 0;
+}
+nav a
+{
+    font-weight: bold;
+    text-decoration: none;
+    color: #2f3a5f;
+}
+nav a:hover
+{
+    text-decoration: underline;
+    color: #a85406;
+}
+
+/* стиль дл€ картинки */
+.image
+{
+    margin: 10px 0;
+}
+/* внутренн€€ область контента */
+
+.first-letter
+{
+	line-height: 1.6;
+}
+
+div
+{
+	margin-bottom: 1em;
+}
+
+.first-letter:first-letter
+{
+    font-family: "Times New Roman" , Times, serif; /* √арнитура шрифта первой буквы */
+    font-size: 200%; /* –азмер шрифта первого символа */
+    /*color: #a85406;*/
+}
+p::first-line
+{
+    line-height: normal;
+}
+aside h2, ul
+{
+    margin-left: 15px;
+}
+.active
+{
+    text-decoration: underline;
+}
+a
+{
+    color: #2f3a5f;
+}
+a:hover
+{
+    text-decoration: none;
+}
+h1, h2, h3, h4, h5, h6
+{
+    font-weight: normal;
+    line-height: 1;
+    margin: 8px 0 12px;
+    color: #2f3a5f;
+    text-shadow: black 1px 1px;
+}
+h1
+{
+    font-size: 1.88em;
+    padding-left: 10px;
+}
+p
+{
+    text-align: justify;
+    word-spacing: .1ex;
+    margin-bottom: 1em;
+}
+nav ul, aside ul
+{
+    list-style: none;
+}
+ol
+{
+    list-style-position: inside;
+}
+table, tr, td
+{
+	vertical-align: top;
+}
+.border
+{
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+.table-fixed
+{
+	table-layout: fixed;
+	width: 100%;	
+}
+.table-wide
+{
+	width: 100%;
+}
+button
+{
+	width: 100px;
+}
